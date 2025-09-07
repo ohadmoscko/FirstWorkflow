@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GPT Workflow Flowchart – Professional, Self‑Contained (v2)</title>
+  <meta name="description" content="Interactive, accessible, responsive GPT workflow flowchart. Single-file HTML with inline CSS and JS. Improvements: theme toggle, progress crumb, focus trap, print styles, JSON export, timestamped download." />
+
+  <style>
+    /* =============================================
+       Design System (CSS Variables)
+       ============================================= */
+    :root {
+      --bg: #0f172a;            /* slate-900 */
+      --panel: #111827;         /* gray-900 */
+      --card: #1f2937;          /* gray-800 */
+      --muted: #94a3b8;         /* slate-400 */
+      --text: #e5e7eb;          /* gray-200 */
+      --accent: #60a5fa;        /* blue-400 */
+      --accent-strong: #3b82f6; /* blue-500 */
+      --success: #34d399;       /* emerald-400 */
+      --warning: #f59e0b;       /* amber-500 */
+      --danger: #f87171;        /* red-400 */
+      --shadow: 0 10px 25px rgba(0,0,0,.35);
+      --radius-xl: 18px;
+      --radius-2xl: 24px;
+      --gap: 16px;
+      --gap-lg: 24px;
+      --maxw: 1100px;
+      --speed: 220ms;
+    }
+
+    /* Light Theme Variables (optional, toggled via data-theme) */
+    :root[data-theme="light"]{
+      --bg:#f7fafc; --panel:#ffffff; --card:#f1f5f9; --text:#0f172a; --muted:#475569;
+      --accent:#2563eb; --accent-strong:#1d4ed8; --success:#059669; --warning:#b45309; --danger:#dc2626;
+      --shadow: 0 10px 25px rgba(0,0,0,.12);
+    }
+
+    /* Base / Reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 20% -10%, #1e293b 0%, transparent 60%),
+                  radial-gradient(1200px 800px at 120% 10%, #0b1224 0%, transparent 50%),
+                  var(--bg);
+      line-height: 1.5;
+    }
+
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 24px; }
+
+    header.site {
+      display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--gap);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+      padding: 20px; border-radius: var(--radius-2xl); backdrop-filter: blur(6px);
+    }
+    .brand h1 { margin: 0; font-size: clamp(1.1rem, 2.3vw, 1.6rem); letter-spacing: .2px; }
+    .brand p { margin: 4px 0 0; color: var(--muted); font-size: .95rem; }
+
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { --btn-bg: #1e293b; --btn-fg: var(--text);
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 999px; background: var(--btn-bg); color: var(--btn-fg);
+      border: 1px solid rgba(255,255,255,.12);
+      cursor: pointer; transition: transform var(--speed), background var(--speed), color var(--speed), box-shadow var(--speed);
+      box-shadow: 0 6px 20px rgba(0,0,0,.25); text-decoration: none; font-weight: 600; font-size: .95rem;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(0,0,0,.35); }
+    .btn:focus { outline: 3px solid rgba(96,165,250,.6); outline-offset: 2px; }
+    .btn.primary { --btn-bg: linear-gradient(135deg, var(--accent-strong), #22c55e); }
+
+    /* Flowchart Section */
+    main { margin-top: 22px; }
+    section.flow {
+      position: relative;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius-2xl);
+      padding: clamp(16px, 3vw, 28px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    /* Grid for nodes (responsive) */
+    .grid { display: grid; grid-template-columns: repeat(6, minmax(140px, 1fr)); gap: var(--gap-lg); }
+    @media (max-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+
+    /* Node cards as accessible buttons */
+    .node { appearance: none; -webkit-appearance: none;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01)), var(--card);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--text); padding: 16px; border-radius: var(--radius-xl);
+      box-shadow: 0 8px 20px rgba(0,0,0,.35); display: grid; gap: 6px; justify-items: start;
+      text-align: left; cursor: pointer; position: relative;
+      transition: transform var(--speed), box-shadow var(--speed), border-color var(--speed);
+    }
+    .node:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(0,0,0,.45); border-color: rgba(96,165,250,.65); }
+    .node:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(59,130,246,.35); }
+
+    .node .title { font-weight: 800; letter-spacing: .2px; }
+    .node .meta { color: var(--muted); font-size: .9rem; }
+
+    /* Node status accents */
+    .is-start { border-left: 6px solid var(--accent-strong); }
+    .is-end { border-left: 6px solid var(--success); }
+    .is-risk { border-left: 6px solid var(--warning); }
+
+    /* Subtle tooltips (hover/focus) */
+    .node .tooltip { position: absolute; inset-inline-start: 10px; inset-block-end: -6px; transform: translateY(100%);
+      background: #0b1220; color: var(--text); padding: 8px 10px; border-radius: 10px; font-size: .85rem; width: max(220px, 50%);
+      box-shadow: 0 10px 20px rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.08);
+      opacity: 0; pointer-events: none; transition: opacity var(--speed), transform var(--speed);
+    }
+    .node:hover .tooltip, .node:focus .tooltip { opacity: 1; transform: translateY(110%); }
+
+    /* SVG connectors container */
+    .wires { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+    .grid, .legend { position: relative; z-index: 1; }
+
+    /* Legend */
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 18px; color: var(--muted); font-size: .9rem; }
+    .legend .chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); }
+    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+    .dot.start { background: var(--accent-strong); }
+    .dot.end { background: var(--success); }
+    .dot.risk { background: var(--warning); }
+
+    /* Modal */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(6,11,22,.65); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+    .modal-backdrop[aria-hidden="false"] { display: flex; }
+    .modal { width: min(680px, 92vw); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)), var(--panel);
+      color: var(--text); border-radius: var(--radius-2xl); border: 1px solid rgba(255,255,255,.12); box-shadow: var(--shadow); }
+    .modal header, .modal footer { padding: 16px 18px; }
+    .modal header { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .modal header h2 { margin: 0; font-size: 1.15rem; }
+    .modal .content { padding: 16px 18px; color: #dbeafe; }
+    .modal .content p { margin: 0 0 12px; color: var(--text); }
+    .modal .badge { font-size: .8rem; color: #93c5fd; background: rgba(59,130,246,.18); padding: 4px 8px; border-radius: 999px; border: 1px solid rgba(59,130,246,.35); }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){ * { animation: none !important; transition: none !important; } .node:hover { transform: none; } }
+
+    /* Print-friendly */
+    @media print{
+      body{ background:#fff; color:#000; }
+      .site, .flow{ box-shadow:none; border:1px solid #ddd; }
+      .wires path{ stroke:#000 !important; }
+      .btn, .legend { display:none !important; }
+    }
+
+    /* Footer */
+    footer.site { margin-top: 26px; display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); }
+    footer.site small { opacity: .9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ===================== HEADER ===================== -->
+    <header class="site" role="banner">
+      <div class="brand">
+        <h1>GPT Workflow Flowchart</h1>
+        <p>Interactive, self-contained visualization with accessible details and export.</p>
+      </div>
+      <div class="actions">
+        <button id="themeBtn" class="btn" aria-label="Toggle light/dark theme" title="Toggle theme">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 100 18 9 9 0 010-18zm0 0a7 7 0 110 14 7 7 0 010-14z" stroke="#e5e7eb" stroke-width="1.5"/></svg>
+          Theme
+        </button>
+        <button id="exportJsonBtn" class="btn" aria-label="Download workflow as JSON" title="Export JSON">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M4 12h10M4 17h7" stroke="#e5e7eb" stroke-width="2" stroke-linecap="round"/></svg>
+          Export JSON
+        </button>
+        <button id="downloadBtn" class="btn primary" aria-label="Download this page as an HTML file" title="Download HTML">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download HTML
+        </button>
+      </div>
+    </header>
+
+    <!-- ===================== MAIN / FLOW ===================== -->
+    <main role="main">
+      <nav id="crumb" aria-label="Progress" style="margin:10px 0 8px;color:var(--muted);font-size:.9rem;"></nav>
+      <section class="flow" aria-label="Workflow flowchart">
+        <!-- SVG wires drawn behind nodes (absolute) -->
+        <svg class="wires" viewBox="0 0 1200 500" preserveAspectRatio="none" aria-hidden="true">
+          <!-- Arrows are drawn by JS after layout to match node positions responsively -->
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="url(#arrowGrad)" />
+            </marker>
+            <linearGradient id="wireGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#60a5fa" stop-opacity=".9" />
+              <stop offset="100%" stop-color="#22c55e" stop-opacity=".9" />
+            </linearGradient>
+            <linearGradient id="arrowGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#60a5fa" />
+              <stop offset="100%" stop-color="#22c55e" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <!-- Node Grid (order matters for wiring) -->
+        <div class="grid" id="nodeGrid">
+          <button class="node is-start" data-node="Start" data-desc="Kickoff: define intent, constraints, and desired outcome. Establish scope and success metrics." aria-label="Node: Start" tabindex="0">
+            <span class="title">Start</span>
+            <span class="meta">Define scope & success metrics</span>
+            <span class="tooltip" role="tooltip">Click for details</span>
+          </button>
+
+          <button class="node" data-node="Catalyst-GPT" data-desc="Catalyst-GPT reframes the prompt into high-leverage directions. Outputs a shortlist of angles and key assumptions." aria-label="Node: Catalyst-GPT">
+            <span class="title">Catalyst‑GPT</span>
+            <span class="meta">Reframe & amplify</span>
+            <span class="tooltip" role="tooltip">Click for details</span>
+          </button>
+
+          <button class="node" data-node="Idea-GPT" data-desc="Idea-GPT generates structured concepts with value props, audience fit, and feasibility notes." aria-label="Node: Idea-GPT">
+            <span class="title">Idea‑GPT</span>
+            <span class="meta">Generate structured concepts</span>
+            <span class="tooltip" role="tooltip">Click for details</span>
+          </button>
+
+          <button class="node is-risk" data-node="Risk Auditor GPT" data-desc="Risk Auditor evaluates assumptions, flags pitfalls, and suggests mitigations. Adds risk score & checks." aria-label="Node: Risk Auditor GPT">
+            <span class="title">Risk Auditor GPT</span>
+            <span class="meta">Surface risks & mitigations</span>
+            <span class="tooltip" role="tooltip">Click for details</span>
+          </button>
+
+          <button class="node" data-node="SheetSmith-GPT" data-desc="SheetSmith-GPT operationalizes: data model, forms, automations, formulas, and Apps Script snippets." aria-label="Node: SheetSmith-GPT">
+            <span class="title">SheetSmith‑GPT</span>
+            <span class="meta">Operationalize & automate</span>
+            <span class="tooltip" role="tooltip">Click for details</span>
+          </button>
+
+          <button class="node" data-node="Closer-GPT" data-desc="Closer-GPT packages deliverables, checks acceptance criteria, and prepares stakeholder-ready assets." aria-label="Node: Closer-GPT">
+            <span class="title">Closer‑GPT</span>
+            <span class="meta">Finalize & package</span>
+            <span class="tooltip" role="tooltip">Click for details</span>
+          </button>
+
+          <button class="node is-end" data-node="End of Day" data-desc="Wrap-up: decisions recorded, artifacts exported, and next steps queued." aria-label="Node: End of Day">
+            <span class="title">End of Day</span>
+            <span class="meta">Export & queue next steps</span>
+            <span class="tooltip" role="tooltip">Click for details</span>
+          </button>
+        </div>
+
+        <!-- Visual Legend -->
+        <div class="legend" aria-label="Legend">
+          <span class="chip"><span class="dot start" aria-hidden="true"></span> Start</span>
+          <span class="chip"><span class="dot risk" aria-hidden="true"></span> Risk Gate</span>
+          <span class="chip"><span class="dot end" aria-hidden="true"></span> End</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="site" role="contentinfo">
+      <small>Professional single‑file HTML • Responsive • Accessible • No external libraries</small>
+      <small>© <span id="year"></span></small>
+    </footer>
+  </div>
+
+  <!-- ===================== MODAL ===================== -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true" aria-label="Details dialog backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" aria-describedby="dialogBody">
+      <header>
+        <h2 id="dialogTitle">Node Details</h2>
+        <button id="closeDialog" class="btn" aria-label="Close dialog">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="#e5e7eb" stroke-width="2" stroke-linecap="round"/></svg>
+          Close
+        </button>
+      </header>
+      <div class="content">
+        <p class="badge" id="dialogBadge">Workflow Node</p>
+        <p id="dialogBody">Details go here.</p>
+      </div>
+      <footer>
+        <button id="nextNode" class="btn primary" aria-label="Go to the next node">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M13 5l7 7-7 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Next Step
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================
+       Modular JS: utilities, flow wiring, modal, download
+       No external libraries. Accessible by default.
+       ===================================================== */
+
+    // ----- Utility: debounce for resize redraw
+    function debounce(fn, wait = 100) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(null, args), wait); }; }
+
+    // ----- DOM helpers
+    const $ = (sel, ctx=document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+    // ----- Global state
+    const grid = $('#nodeGrid');
+    const nodes = $$('.node', grid);
+    const wires = $('.wires');
+    const modalBackdrop = $('#modalBackdrop');
+    const dialogTitle = $('#dialogTitle');
+    const dialogBody = $('#dialogBody');
+    const dialogBadge = $('#dialogBadge');
+    const closeDialogBtn = $('#closeDialog');
+    const nextBtn = $('#nextNode');
+    const downloadBtn = $('#downloadBtn');
+    const themeBtn = $('#themeBtn');
+    const exportJsonBtn = $('#exportJsonBtn');
+    const crumb = $('#crumb');
+
+    // ----- Flow sequence (indexes correspond to buttons order)
+    const sequence = [
+      'Start', 'Catalyst-GPT', 'Idea-GPT', 'Risk Auditor GPT',
+      // Parallel branch: SheetSmith & Closer before End
+      'SheetSmith-GPT', 'Closer-GPT', 'End of Day'
+    ];
+
+    // Map of node -> next node(s)
+    const nextMap = {
+      'Start': ['Catalyst-GPT'],
+      'Catalyst-GPT': ['Idea-GPT'],
+      'Idea-GPT': ['Risk Auditor GPT'],
+      'Risk Auditor GPT': ['SheetSmith-GPT', 'Closer-GPT'], // fan-out
+      'SheetSmith-GPT': ['End of Day'],
+      'Closer-GPT': ['End of Day'],
+      'End of Day': []
+    };
+
+    // ----- Tooltip content enhancement
+    nodes.forEach(n => {
+      const meta = n.querySelector('.meta')?.textContent?.trim() || '';
+      const tip = n.querySelector('.tooltip');
+      if (tip && meta) tip.textContent = meta + ' • Click for details';
+    });
+
+    // ----- Focus trap + breadcrumb
+    function trapFocus(container){
+      const SEL = 'a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
+      const els = Array.from(container.querySelectorAll(SEL)).filter(el=>!el.hasAttribute('disabled'));
+      const first = els[0], last = els[els.length-1];
+      function onKey(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+      }
+      container.addEventListener('keydown', onKey);
+      return ()=> container.removeEventListener('keydown', onKey);
+    }
+    function setCrumb(name){
+      const idx = sequence.indexOf(name) + 1;
+      if(!crumb) return; crumb.textContent = idx ? `Step ${idx} of ${sequence.length} • ${name}` : name;
+    }
+
+    // ----- Modal logic with focus management
+    let currentIndex = 0; let untrap = ()=>{};
+    function openDialogFromNode(nodeEl) {
+      const title = nodeEl.dataset.node || 'Node';
+      const desc = nodeEl.dataset.desc || '—';
+      dialogTitle.textContent = title;
+      dialogBody.textContent = desc;
+      dialogBadge.textContent = 'Workflow Node';
+      modalBackdrop.setAttribute('aria-hidden', 'false');
+      modalBackdrop.style.display = 'flex';
+      // Inert background and trap focus
+      document.querySelector('header.site')?.setAttribute('inert','');
+      document.querySelector('main')?.setAttribute('inert','');
+      document.querySelector('footer.site')?.setAttribute('inert','');
+      untrap = trapFocus(document.querySelector('.modal'));
+      closeDialogBtn.focus();
+      // Remember index
+      currentIndex = nodes.indexOf(nodeEl);
+      // Update next button state
+      const nextNodes = nextMap[title] || [];
+      nextBtn.style.display = nextNodes.length ? 'inline-flex' : 'none';
+      setCrumb(title);
+      // Update URL hash for deep-linking
+      location.hash = encodeURIComponent(title);
+    }
+    function closeDialog() {
+      modalBackdrop.setAttribute('aria-hidden', 'true');
+      modalBackdrop.style.display = 'none';
+      // Remove inert & focus trap
+      document.querySelector('header.site')?.removeAttribute('inert');
+      document.querySelector('main')?.removeAttribute('inert');
+      document.querySelector('footer.site')?.removeAttribute('inert');
+      untrap();
+      // Return focus to current node
+      if (nodes[currentIndex]) nodes[currentIndex].focus();
+    }
+    closeDialogBtn.addEventListener('click', closeDialog);
+    modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeDialog(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDialog(); });
+
+    // Next step button: focus the next node in logical sequence
+    nextBtn.addEventListener('click', () => {
+      const title = dialogTitle.textContent;
+      const nextNodes = nextMap[title] || [];
+      if (!nextNodes.length) return;
+      const targetName = nextNodes[0];
+      const targetEl = nodes.find(n => n.dataset.node === targetName);
+      closeDialog();
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => openDialogFromNode(targetEl), 220);
+      }
+    });
+
+    // Bind nodes
+    nodes.forEach(btn => {
+      btn.addEventListener('click', () => openDialogFromNode(btn));
+      btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); } });
+    });
+
+    // ----- Wires: draw responsive connectors between nodes
+    function drawWires() {
+      // Clear previous
+      wires.innerHTML = wires.innerHTML.replace(/<g class=\"wire-group\">[\s\S]*<\/g>/g, '');
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('class', 'wire-group');
+      wires.appendChild(g);
+
+      // Compute line paths using DOMRects projected into SVG coordinate space
+      const svgRect = wires.getBoundingClientRect();
+      function pt(el, side = 'right') {
+        const r = el.getBoundingClientRect();
+        const x = side === 'right' ? r.right - svgRect.left : r.left - svgRect.left;
+        const y = r.top + r.height/2 - svgRect.top;
+        return { x, y };
+      }
+      function path(curve) {
+        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p.setAttribute('d', curve);
+        p.setAttribute('fill', 'none');
+        p.setAttribute('stroke', 'url(#wireGrad)');
+        p.setAttribute('stroke-width', '3');
+        p.setAttribute('marker-end', 'url(#arrow)');
+        p.setAttribute('opacity', '0.95');
+        g.appendChild(p);
+      }
+      function cubic(from, to) {
+        const dx = Math.max(40, Math.abs(to.x - from.x) * 0.35);
+        return `M ${from.x} ${from.y} C ${from.x + dx} ${from.y}, ${to.x - dx} ${to.y}, ${to.x} ${to.y}`;
+      }
+
+      // Build connections from nextMap
+      nodes.forEach(fromNode => {
+        const fromName = fromNode.dataset.node;
+        const targets = nextMap[fromName] || [];
+        const from = pt(fromNode, 'right');
+        targets.forEach(name => {
+          const toNode = nodes.find(n => n.dataset.node === name);
+          if (!toNode) return;
+          const to = pt(toNode, 'left');
+          const d = cubic(from, to);
+          path(d);
+        });
+      });
+    }
+
+    // Redraw on resize/orientation changes
+    const onResize = debounce(drawWires, 120);
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    window.addEventListener('load', () => { 
+      drawWires(); 
+      $('#year').textContent = new Date().getFullYear();
+      initTheme();
+      const hash = decodeURIComponent(location.hash.replace('#',''));
+      const target = hash && nodes.find(n=> (n.dataset.node===hash));
+      if(target){ target.scrollIntoView({behavior:'instant', block:'center'}); openDialogFromNode(target); }
+    });
+
+    // ----- Theme toggle + persist
+    function initTheme(){
+      const saved = localStorage.getItem('theme');
+      if(saved){ document.documentElement.setAttribute('data-theme', saved); }
+      else {
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        if(prefersLight) document.documentElement.setAttribute('data-theme', 'light');
+      }
+      themeBtn?.setAttribute('aria-pressed', String(document.documentElement.getAttribute('data-theme')==='light'));
+    }
+    themeBtn?.addEventListener('click', ()=>{
+      const cur = document.documentElement.getAttribute('data-theme')==='light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', cur);
+      localStorage.setItem('theme', cur);
+      themeBtn.setAttribute('aria-pressed', String(cur==='light'));
+      drawWires();
+    });
+
+    // ----- Download: serialize current document as a file
+    function timestamp(){ const d=new Date(); return d.toISOString().slice(0,10); }
+    function downloadCurrentHTML(filename = `GPT_Workflow_${timestamp()}.html`) {
+      const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 0);
+    }
+    downloadBtn.addEventListener('click', () => downloadCurrentHTML());
+
+    // ----- Export JSON (no-code)
+    function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+    exportJsonBtn?.addEventListener('click', ()=>{
+      const nodeList = nodes.map(n=>({
+        id: slugify(n.dataset.node),
+        title: n.dataset.node,
+        desc: n.dataset.desc,
+        kind: n.classList.contains('is-start')?'start':n.classList.contains('is-end')?'end':n.classList.contains('is-risk')?'risk':'standard'
+      }));
+      const edges = [];
+      nodeList.forEach(n=>{ (nextMap[n.title]||[]).forEach(t=>{ edges.push([slugify(n.title), slugify(t)]); }); });
+      const FLOW = { nodes: nodeList, edges };
+      const blob = new Blob([JSON.stringify(FLOW,null,2)], {type:'application/json'});
+      const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(blob), download: 'gpt_workflow.json'});
+      document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },0);
+    });
+  </script>
+</body>
+</html>
