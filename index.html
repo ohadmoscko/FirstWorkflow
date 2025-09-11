@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GPT Workflow Flowchart – Professional, Self‑Contained (v2)</title>
+  <title>GPT Workflow Flowchart – Professional, Self-Contained (v2)</title>
   <meta name="description" content="Interactive, accessible, responsive GPT workflow flowchart. Single-file HTML with inline CSS and JS. Improvements: theme toggle, progress crumb, focus trap, print styles, JSON export, timestamped download." />
 
   <style>
@@ -189,7 +189,6 @@
       <section class="flow" aria-label="Workflow flowchart">
         <!-- SVG wires drawn behind nodes (absolute) -->
         <svg class="wires" viewBox="0 0 1200 500" preserveAspectRatio="none" aria-hidden="true">
-          <!-- Arrows are drawn by JS after layout to match node positions responsively -->
           <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
               <path d="M 0 0 L 10 5 L 0 10 z" fill="url(#arrowGrad)" />
@@ -214,13 +213,13 @@
           </button>
 
           <button class="node" data-node="Catalyst-GPT" data-desc="Catalyst-GPT reframes the prompt into high-leverage directions. Outputs a shortlist of angles and key assumptions." aria-label="Node: Catalyst-GPT">
-            <span class="title">Catalyst‑GPT</span>
+            <span class="title">Catalyst-GPT</span>
             <span class="meta">Reframe & amplify</span>
             <span class="tooltip" role="tooltip">Click for details</span>
           </button>
 
           <button class="node" data-node="Idea-GPT" data-desc="Idea-GPT generates structured concepts with value props, audience fit, and feasibility notes." aria-label="Node: Idea-GPT">
-            <span class="title">Idea‑GPT</span>
+            <span class="title">Idea-GPT</span>
             <span class="meta">Generate structured concepts</span>
             <span class="tooltip" role="tooltip">Click for details</span>
           </button>
@@ -232,13 +231,13 @@
           </button>
 
           <button class="node" data-node="SheetSmith-GPT" data-desc="SheetSmith-GPT operationalizes: data model, forms, automations, formulas, and Apps Script snippets." aria-label="Node: SheetSmith-GPT">
-            <span class="title">SheetSmith‑GPT</span>
+            <span class="title">SheetSmith-GPT</span>
             <span class="meta">Operationalize & automate</span>
             <span class="tooltip" role="tooltip">Click for details</span>
           </button>
 
           <button class="node" data-node="Closer-GPT" data-desc="Closer-GPT packages deliverables, checks acceptance criteria, and prepares stakeholder-ready assets." aria-label="Node: Closer-GPT">
-            <span class="title">Closer‑GPT</span>
+            <span class="title">Closer-GPT</span>
             <span class="meta">Finalize & package</span>
             <span class="tooltip" role="tooltip">Click for details</span>
           </button>
@@ -261,7 +260,7 @@
 
     <!-- ===================== FOOTER ===================== -->
     <footer class="site" role="contentinfo">
-      <small>Professional single‑file HTML • Responsive • Accessible • No external libraries</small>
+      <small>Professional single-file HTML • Responsive • Accessible • No external libraries</small>
       <small>© <span id="year"></span></small>
     </footer>
   </div>
@@ -320,7 +319,6 @@
     // ----- Flow sequence (indexes correspond to buttons order)
     const sequence = [
       'Start', 'Catalyst-GPT', 'Idea-GPT', 'Risk Auditor GPT',
-      // Parallel branch: SheetSmith & Closer before End
       'SheetSmith-GPT', 'Closer-GPT', 'End of Day'
     ];
 
@@ -329,7 +327,7 @@
       'Start': ['Catalyst-GPT'],
       'Catalyst-GPT': ['Idea-GPT'],
       'Idea-GPT': ['Risk Auditor GPT'],
-      'Risk Auditor GPT': ['SheetSmith-GPT', 'Closer-GPT'], // fan-out
+      'Risk Auditor GPT': ['SheetSmith-GPT', 'Closer-GPT'],
       'SheetSmith-GPT': ['End of Day'],
       'Closer-GPT': ['End of Day'],
       'End of Day': []
@@ -370,37 +368,30 @@
       dialogBadge.textContent = 'Workflow Node';
       modalBackdrop.setAttribute('aria-hidden', 'false');
       modalBackdrop.style.display = 'flex';
-      // Inert background and trap focus
       document.querySelector('header.site')?.setAttribute('inert','');
       document.querySelector('main')?.setAttribute('inert','');
       document.querySelector('footer.site')?.setAttribute('inert','');
       untrap = trapFocus(document.querySelector('.modal'));
       closeDialogBtn.focus();
-      // Remember index
       currentIndex = nodes.indexOf(nodeEl);
-      // Update next button state
       const nextNodes = nextMap[title] || [];
       nextBtn.style.display = nextNodes.length ? 'inline-flex' : 'none';
       setCrumb(title);
-      // Update URL hash for deep-linking
       location.hash = encodeURIComponent(title);
     }
     function closeDialog() {
       modalBackdrop.setAttribute('aria-hidden', 'true');
       modalBackdrop.style.display = 'none';
-      // Remove inert & focus trap
       document.querySelector('header.site')?.removeAttribute('inert');
       document.querySelector('main')?.removeAttribute('inert');
       document.querySelector('footer.site')?.removeAttribute('inert');
       untrap();
-      // Return focus to current node
       if (nodes[currentIndex]) nodes[currentIndex].focus();
     }
     closeDialogBtn.addEventListener('click', closeDialog);
     modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeDialog(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDialog(); });
 
-    // Next step button: focus the next node in logical sequence
     nextBtn.addEventListener('click', () => {
       const title = dialogTitle.textContent;
       const nextNodes = nextMap[title] || [];
@@ -414,7 +405,6 @@
       }
     });
 
-    // Bind nodes
     nodes.forEach(btn => {
       btn.addEventListener('click', () => openDialogFromNode(btn));
       btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); } });
@@ -422,13 +412,11 @@
 
     // ----- Wires: draw responsive connectors between nodes
     function drawWires() {
-      // Clear previous
       wires.innerHTML = wires.innerHTML.replace(/<g class=\"wire-group\">[\s\S]*<\/g>/g, '');
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       g.setAttribute('class', 'wire-group');
       wires.appendChild(g);
 
-      // Compute line paths using DOMRects projected into SVG coordinate space
       const svgRect = wires.getBoundingClientRect();
       function pt(el, side = 'right') {
         const r = el.getBoundingClientRect();
@@ -451,7 +439,6 @@
         return `M ${from.x} ${from.y} C ${from.x + dx} ${from.y}, ${to.x - dx} ${to.y}, ${to.x} ${to.y}`;
       }
 
-      // Build connections from nextMap
       nodes.forEach(fromNode => {
         const fromName = fromNode.dataset.node;
         const targets = nextMap[fromName] || [];
@@ -460,13 +447,11 @@
           const toNode = nodes.find(n => n.dataset.node === name);
           if (!toNode) return;
           const to = pt(toNode, 'left');
-          const d = cubic(from, to);
-          path(d);
+          path(cubic(from, to));
         });
       });
     }
 
-    // Redraw on resize/orientation changes
     const onResize = debounce(drawWires, 120);
     window.addEventListener('resize', onResize);
     window.addEventListener('orientationchange', onResize);
@@ -511,19 +496,36 @@
 
     // ----- Export JSON (no-code)
     function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
-      exportJsonBtn?.addEventListener('click', ()=>{ /* ... */ });
+    exportJsonBtn?.addEventListener('click', ()=>{
+      const nodeList = nodes.map(n=>({
+        id: slugify(n.dataset.node),
+        title: n.dataset.node,
+        desc: n.dataset.desc,
+        kind: n.classList.contains('is-start')?'start':n.classList.contains('is-end')?'end':n.classList.contains('is-risk')?'risk':'standard'
+      }));
+      const edges = [];
+      nodeList.forEach(n=>{ (nextMap[n.title]||[]).forEach(t=>{ edges.push([slugify(n.title), slugify(t)]); }); });
+      const FLOW = { nodes: nodeList, edges };
+      const blob = new Blob([JSON.stringify(FLOW,null,2)], {type:'application/json'});
+      const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(blob), download: 'gpt_workflow.json'});
+      document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },0);
+    });
   </script>
 
   <!-- === DEMO: Run Sample (Make.com webhook) === -->
-  <section id="demo" style="margin:24px 0;">
+  <section id="demo" style="margin:24px;">
     <h3>Try the Automation (Sample)</h3>
-    <button id="runDemo">Run Sample Quote</button>
-    <pre id="demoResult" style="padding:12px;background:#111;color:#ddd;overflow:auto;"></pre>
+    <button id="runDemo" class="btn primary" style="margin:8px 0;">Run Sample Quote</button>
+    <pre id="demoResult" style="padding:12px;background:#111;color:#ddd;overflow:auto;max-height:260px;border-radius:12px;"></pre>
   </section>
   <script>
   (function () {
-    const btn  = document.getElementById('runDemo');
-    const out  = document.getElementById('demoResult');
+    // ⬇⬇⬇  REPLACE this with your Make "Production" webhook URL  ⬇⬇⬇
+    const MAKE_WEBHOOK_URL = 'https://hook.eu2.make.com/bb9vxkdrys1c0somf6l7357tdnxoc7sq
+';
+
+    const btn = document.getElementById('runDemo');
+    const out = document.getElementById('demoResult');
     if (!btn || !out) return;
 
     btn.addEventListener('click', async () => {
@@ -535,23 +537,20 @@
           budget_hint: "5-7K USD",
           deadline: "2025-10-15"
         };
-        const r = await fetch('https://hook.eu2.make.com/bb9vxkdrys1c0somf6l7357tdnxoc7sq', {
+        const res = await fetch(MAKE_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const data = await r.json();
-        out.textContent = JSON.stringify(data, null, 2);
+        const text = await res.text();
+        out.textContent = 'HTTP ' + res.status + '\n\n' + text;
       } catch (e) {
-        out.textContent = 'Error: ' + (e?.message || e);
+        out.textContent = 'Fetch error: ' + (e?.message || e);
       }
     });
   })();
   </script>
   <!-- === /DEMO === -->
-
-</body>
 
 </body>
 </html>
