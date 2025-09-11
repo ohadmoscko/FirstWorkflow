@@ -1,0 +1,62 @@
+[
+  {
+    "path": "LICENSE",
+    "size": 1067,
+    "sha": "fc630420b9a740156246e7a20361194ca837979b082a8e26c6daf57170289a75"
+  },
+  {
+    "path": "README.md",
+    "size": 620,
+    "sha": "cb1caf149628d01f7b6900eb9986c270379fc2f049981e8037e42a65bb044f7c"
+  },
+  {
+    "path": "assets/screenshots/workflow.png",
+    "size": 1580058,
+    "sha": "9a8ff6c1e857df2e1125759a064ac2610a3939236b170dff56e43fc6e4491fa8"
+  },
+  {
+    "path": "docs/ARCHITECTURE.md",
+    "size": 596,
+    "sha": "9f26bd90ec68589f7b47b3ac5b5b0bd02c3b5cd23e8dab051d89f3cf3f5cba2a"
+  },
+  {
+    "path": "docs/DESIGN_NOTES.md",
+    "size": 1422,
+    "sha": "d8f2eff18958fcd8f480e1c58d16e977091419f464dca2b2f3e14802adc9ae14"
+  },
+  {
+    "path": "docs/HISTORY.md",
+    "size": 2091,
+    "sha": "d024ebc471052cc57c661912b61add6410f475e0af075239225c79ef706f90a5"
+  },
+  {
+    "path": "docs/ROADMAP.md",
+    "size": 485,
+    "sha": "f0ae3fdd2226106c9428ee989786c5f4daea664bbb9b82bfec5ec39afe0461de"
+  },
+  {
+    "path": "docs/case_studies/demo_calendar_agent.md",
+    "size": 408,
+    "sha": "50f4003c63cd4f6a6094759ad445e954b4c4987a3215fb890e99d853e7d3ddb5"
+  },
+  {
+    "path": "docs/case_studies/demo_meeting_summary.md",
+    "size": 437,
+    "sha": "b0b42c12cf0f2d29cfe0737822f9a16009ffc717e5d785bd3363348381521b0b"
+  },
+  {
+    "path": "docs/case_studies/demo_price_quote.md",
+    "size": 505,
+    "sha": "f4a00caa72c74b06f2029f815da8e03dbb04aa6b3b4396b8843a1c69bbd413f6"
+  },
+  {
+    "path": "docs/project_log.md",
+    "size": 3263,
+    "sha": "fd4f299fdd07de2313458af9676c6d4a7696c12336e723706da4bf78714b2415"
+  },
+  {
+    "path": "index.html",
+    "size": 26831,
+    "sha": "85cc800f1ca2d2f9dabc1de556953347c766d8be817f6e36c9964ea62d8afd32"
+  }
+]
