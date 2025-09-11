@@ -1,3 +1,6 @@
+> For detailed design/rationale and stage-by-stage outputs, see:
+> https://github.com/ohadmoscko/GPT-backups
+
 
 # Short Roadmap (Next 2 weeks)
 
