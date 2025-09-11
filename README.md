@@ -1,3 +1,8 @@
+## Learn More (Full Docs)
+For full documentation (prompts, outputs, changelog, history), see:
+👉 https://github.com/ohadmoscko/GPT-backups
+
+
 # FirstWorkflow – AI Agent Demo
 
 This repository hosts the **live demo** of the AI Agent Workflow project.
