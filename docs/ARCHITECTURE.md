@@ -15,3 +15,5 @@
 - Import workflow.json from URL
 - Export to Markdown/PNG
 - Optional API endpoints
+
+> For detailed architecture and rationale, see the documentation repo: https://github.com/ohadmoscko/GPT-backups
