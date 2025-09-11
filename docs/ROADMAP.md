@@ -9,3 +9,5 @@
 
 Nice-to-have:
 - Static PNG export (canvas serialize) — 1d
+
+> For detailed architecture and rationale, see the documentation repo: https://github.com/ohadmoscko/GPT-backups
