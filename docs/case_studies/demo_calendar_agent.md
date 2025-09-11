@@ -10,3 +10,9 @@
 5) Closer → finalize a calendar/event brief
 
 **Result:** A ready-to-review event plan suitable for calendar entry.
+
+---
+
+### Related deep docs (GPT-backups)
+- Execution roadmap (Stage 6): https://github.com/ohadmoscko/GPT-backups/blob/main/workflows/Outputs/stage6_roadmap/stage6_week_plan_v1.md
+- Demo overview (Stage 7): https://github.com/ohadmoscko/GPT-backups/blob/main/workflows/Outputs/stage7_demo/README.md
