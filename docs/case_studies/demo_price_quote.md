@@ -11,3 +11,10 @@
 
 **Result**:  
 A professional, ready-to-send price quote reviewed by the full agent team.
+
+---
+
+### Related deep docs (GPT-backups)
+- Stage 4 assets copy: https://github.com/ohadmoscko/GPT-backups/blob/main/workflows/Outputs/stage4_assets/pdf_copy_v1.md
+- Site tasks (supporting the demo): https://github.com/ohadmoscko/GPT-backups/blob/main/workflows/Outputs/stage4_assets/site_tasks_v1.md
+- Demo overview (Stage 7): https://github.com/ohadmoscko/GPT-backups/blob/main/workflows/Outputs/stage7_demo/README.md
