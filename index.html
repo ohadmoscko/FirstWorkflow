@@ -511,20 +511,47 @@
 
     // ----- Export JSON (no-code)
     function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
-    exportJsonBtn?.addEventListener('click', ()=>{
-      const nodeList = nodes.map(n=>({
-        id: slugify(n.dataset.node),
-        title: n.dataset.node,
-        desc: n.dataset.desc,
-        kind: n.classList.contains('is-start')?'start':n.classList.contains('is-end')?'end':n.classList.contains('is-risk')?'risk':'standard'
-      }));
-      const edges = [];
-      nodeList.forEach(n=>{ (nextMap[n.title]||[]).forEach(t=>{ edges.push([slugify(n.title), slugify(t)]); }); });
-      const FLOW = { nodes: nodeList, edges };
-      const blob = new Blob([JSON.stringify(FLOW,null,2)], {type:'application/json'});
-      const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(blob), download: 'gpt_workflow.json'});
-      document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },0);
-    });
+      exportJsonBtn?.addEventListener('click', ()=>{ /* ... */ });
   </script>
+
+  <!-- === DEMO: Run Sample (Make.com webhook) === -->
+  <section id="demo" style="margin:24px 0;">
+    <h3>Try the Automation (Sample)</h3>
+    <button id="runDemo">Run Sample Quote</button>
+    <pre id="demoResult" style="padding:12px;background:#111;color:#ddd;overflow:auto;"></pre>
+  </section>
+  <script>
+  (function () {
+    const btn  = document.getElementById('runDemo');
+    const out  = document.getElementById('demoResult');
+    if (!btn || !out) return;
+
+    btn.addEventListener('click', async () => {
+      out.textContent = 'Running...';
+      try {
+        const payload = {
+          name: "Sample Co.",
+          scope: "Branding + 3 landing pages",
+          budget_hint: "5-7K USD",
+          deadline: "2025-10-15"
+        };
+        const r = await fetch('https://hook.eu2.make.com/bb9vxkdrys1c0somf6l7357tdnxoc7sq', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        out.textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        out.textContent = 'Error: ' + (e?.message || e);
+      }
+    });
+  })();
+  </script>
+  <!-- === /DEMO === -->
+
+</body>
+
 </body>
 </html>
