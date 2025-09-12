@@ -1,0 +1,3 @@
+# never commit secrets or local exports
+*.env
+.DS_Store
