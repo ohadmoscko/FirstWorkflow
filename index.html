@@ -283,17 +283,16 @@
       // Helper functions
       const getURL = () => (urlEl?.value || '').trim();
       const getSecret = () => (secretEl?.value || '').trim();
-
-      //
-        (function prefillFromQuery(){
+      
+    // Put near your other helpers
+    (function prefillFromQuery(){
     const p = new URLSearchParams(location.search);
     const url = p.get('url');
     if (url) {
-      const el = document.getElementById('hookUrl');
-      if (el) { el.value = url; try{ localStorage.setItem('makeHookUrl', url);}catch{} }
+    const el = document.getElementById('hookUrl');
+    if (el) { el.value = url; try{ localStorage.setItem('makeHookUrl', url);}catch{} }
     }
-  })();
-      
+  })();   
       // Load saved configuration
       try {
         const savedUrl = localStorage.getItem('makeHookUrl');
