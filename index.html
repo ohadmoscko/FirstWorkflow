@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Make.com Webhook with Secret Key</title>
+  
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #1f2937;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --accent: #60a5fa;
+      --accent-strong: #3b82f6;
+      --success: #34d399;
+      --warning: #f59e0b;
+      --danger: #f87171;
+      --shadow: 0 10px 25px rgba(0,0,0,.35);
+      --radius-xl: 18px;
+      --gap: 16px;
+      --maxw: 800px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 20% -10%, #1e293b 0%, transparent 60%),
+                  radial-gradient(1200px 800px at 120% 10%, #0b1224 0%, transparent 50%),
+                  var(--bg);
+      line-height: 1.5;
+    }
+
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 24px; }
+
+    .demo-section {
+      margin: 24px 0;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .demo-section h3 { 
+      margin: 0 0 16px; 
+      color: var(--text); 
+      font-size: 1.25rem;
+    }
+
+    .form-field { 
+      margin-bottom: 16px; 
+    }
+
+    .form-field label { 
+      display: block; 
+      margin-bottom: 6px; 
+      color: var(--text); 
+      font-weight: 500; 
+    }
+
+    .form-field .help-text {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .form-field input, .form-field textarea {
+      width: 100%; 
+      padding: 12px; 
+      border-radius: 8px; 
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.12); 
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .form-field input:focus, .form-field textarea:focus {
+      outline: none; 
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+    }
+
+    .secret-input {
+      position: relative;
+    }
+
+    .toggle-visibility {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .toggle-visibility:hover {
+      color: var(--accent);
+      background: rgba(255,255,255,.05);
+    }
+
+    .btn { 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 10px;
+      padding: 12px 18px; 
+      border-radius: 8px; 
+      background: var(--accent-strong); 
+      color: white;
+      border: none;
+      cursor: pointer; 
+      transition: all 0.2s;
+      font-weight: 600; 
+      font-size: 0.95rem;
+      box-shadow: 0 4px 12px rgba(59,130,246,.3);
+    }
+
+    .btn:hover { 
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(59,130,246,.4);
+    }
+
+    .btn:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59,130,246,.4);
+    }
+
+    .btn.secondary {
+      background: #374151;
+      color: var(--text);
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+
+    .btn.secondary:hover {
+      background: #4b5563;
+    }
+
+    .output-box {
+      padding: 16px; 
+      background: #0a0a0a; 
+      color: #ddd; 
+      overflow: auto;
+      max-height: 300px; 
+      border-radius: 8px; 
+      white-space: pre-wrap;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .warning-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      color: #fbbf24;
+      font-size: 0.9rem;
+    }
+
+    .success-box {
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      color: #34d399;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1 style="color: var(--text); text-align: center; margin-bottom: 2rem;">
+      🔐 Secure Webhook Integration
+    </h1>
+
+    <!-- === Configuration Section === -->
+    <section class="demo-section">
+      <h3>🔧 Webhook Configuration</h3>
+      
+      <div class="form-field">
+        <label for="hookUrl">Make.com Webhook URL:</label>
+        <input id="hookUrl" type="url" placeholder="https://hook.eu2.make.com/your-webhook-url">
+        <div class="help-text">Your Make.com webhook endpoint URL</div>
+      </div>
+
+      <div class="form-field">
+        <label for="secretKey">Secret Key:</label>
+        <div class="secret-input">
+          <input id="secretKey" type="password" placeholder="Enter your secret authentication key">
+          <button type="button" class="toggle-visibility" id="toggleSecret" title="Toggle visibility">
+            👁️
+          </button>
+        </div>
+        <div class="help-text">This key will be sent in the request headers for authentication</div>
+      </div>
+
+      <div class="button-group">
+        <button id="pingBtn" class="btn">🚀 Send Test Ping</button>
+        <button id="fillFromClipboard" class="btn secondary">📋 Paste URL from Clipboard</button>
+        <button id="saveConfig" class="btn secondary">💾 Save Config</button>
+        <button id="clearConfig" class="btn secondary">🗑️ Clear All</button>
+      </div>
+
+      <div class="output-box" id="pingOut">Configure your webhook above and click "Send Test Ping" to test the connection...</div>
+    </section>
+
+    <!-- === Quote Request Form === -->
+    <section class="demo-section">
+      <h3>📋 Request a Quote</h3>
+      
+      <div class="warning-box">
+        ⚠️ Make sure to configure your webhook URL and secret key above before submitting.
+      </div>
+
+      <form id="quoteForm">
+        <div class="form-field">
+          <label for="companyName">Company Name:</label>
+          <input id="companyName" type="text" required placeholder="Your Company Name">
+        </div>
+
+        <div class="form-field">
+          <label for="projectScope">Project Scope:</label>
+          <textarea id="projectScope" rows="4" required placeholder="Describe your project needs in detail..."></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="budgetHint">Budget Range:</label>
+          <input id="budgetHint" type="text" placeholder="e.g., $5,000 - $10,000">
+        </div>
+
+        <div class="form-field">
+          <label for="deadline">Target Deadline:</label>
+          <input id="deadline" type="date">
+        </div>
+
+        <button type="submit" class="btn" style="margin-bottom:16px;">
+          📤 Submit Quote Request
+        </button>
+      </form>
+
+      <div class="output-box" id="quoteResult">Fill out the form above and submit to request a quote...</div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Elements
+      const urlEl = document.getElementById('hookUrl');
+      const secretEl = document.getElementById('secretKey');
+      const toggleSecretBtn = document.getElementById('toggleSecret');
+      const pingBtn = document.getElementById('pingBtn');
+      const pingOut = document.getElementById('pingOut');
+      const clipBtn = document.getElementById('fillFromClipboard');
+      const saveBtn = document.getElementById('saveConfig');
+      const clearBtn = document.getElementById('clearConfig');
+
+      const quoteForm = document.getElementById('quoteForm');
+      const quoteResult = document.getElementById('quoteResult');
+      const companyName = document.getElementById('companyName');
+      const projectScope = document.getElementById('projectScope');
+      const budgetHint = document.getElementById('budgetHint');
+      const deadline = document.getElementById('deadline');
+
+      // Helper functions
+      const getURL = () => (urlEl?.value || '').trim();
+      const getSecret = () => (secretEl?.value || '').trim();
+
+      // Load saved configuration
+      try {
+        const savedUrl = localStorage.getItem('makeHookUrl');
+        const savedSecret = localStorage.getItem('makeHookSecret');
+        if (savedUrl) urlEl.value = savedUrl;
+        if (savedSecret) secretEl.value = savedSecret;
+      } catch (e) {
+        console.warn('Could not load saved config:', e);
+      }
+
+      // Save configuration
+      function saveConfig() {
+        try {
+          localStorage.setItem('makeHookUrl', getURL());
+          localStorage.setItem('makeHookSecret', getSecret());
+          showMessage(pingOut, '✅ Configuration saved locally!', 'success');
+        } catch (e) {
+          showMessage(pingOut, '❌ Could not save configuration: ' + e.message, 'error');
+        }
+      }
+
+      // Clear configuration
+      function clearConfig() {
+        if (confirm('Are you sure you want to clear all configuration?')) {
+          urlEl.value = '';
+          secretEl.value = '';
+          try {
+            localStorage.removeItem('makeHookUrl');
+            localStorage.removeItem('makeHookSecret');
+            showMessage(pingOut, '🗑️ Configuration cleared!', 'info');
+          } catch (e) {
+            console.warn('Could not clear localStorage:', e);
+          }
+        }
+      }
+
+      // Auto-save on input
+      urlEl?.addEventListener('input', () => {
+        try {
+          localStorage.setItem('makeHookUrl', getURL());
+        } catch (e) {}
+      });
+
+      secretEl?.addEventListener('input', () => {
+        try {
+          localStorage.setItem('makeHookSecret', getSecret());
+        } catch (e) {}
+      });
+
+      // Toggle secret visibility
+      toggleSecretBtn?.addEventListener('click', () => {
+        const isPassword = secretEl.type === 'password';
+        secretEl.type = isPassword ? 'text' : 'password';
+        toggleSecretBtn.textContent = isPassword ? '🙈' : '👁️';
+        toggleSecretBtn.title = isPassword ? 'Hide secret' : 'Show secret';
+      });
+
+      // Clipboard functionality
+      clipBtn?.addEventListener('click', async () => {
+        try {
+          const clipText = await navigator.clipboard.readText();
+          urlEl.value = clipText;
+          showMessage(pingOut, '📋 URL pasted from clipboard!', 'info');
+        } catch (e) {
+          alert('Clipboard access blocked - please paste manually.');
+        }
+      });
+
+      // Save/Clear buttons
+      saveBtn?.addEventListener('click', saveConfig);
+      clearBtn?.addEventListener('click', clearConfig);
+
+      // Message helper
+      function showMessage(element, message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const prefix = type === 'success' ? '✅' : type === 'error' ? '❌' : '📝';
+        element.textContent = `[${timestamp}] ${prefix} ${message}`;
+      }
+
+      // Create headers with secret key
+function createHeaders() {
+  return {
+    'Content-Type': 'application/json' // Only Content-Type header remains
+  };
+}
+
+      // Test ping functionality
+      pingBtn?.addEventListener('click', async () => {
+        const url = getURL();
+        if (!url) {
+          showMessage(pingOut, 'Please enter your Make webhook URL first.', 'error');
+          urlEl.focus();
+          return;
+        }
+
+        showMessage(pingOut, 'Sending secure ping...', 'info');
+        
+        try {
+const payload = {
+  key: getSecret(),
+  ping: 'ok',
+  source: 'secure-webhook-test',
+  timestamp: new Date().toISOString(),
+  test_mode: true,
+  key: getSecret() // ✅ Secret now in the body
+};
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: createHeaders(),
+            body: JSON.stringify(payload)
+          });
+
+          const responseText = await response.text();
+          const secret = getSecret();
+          
+          pingOut.textContent = `[${new Date().toLocaleTimeString()}] 🚀 PING RESPONSE
+          
+📊 Status: HTTP ${response.status} ${response.statusText}
+🔐 Secret Key: ${secret ? '✅ Provided' : '⚠️ Not provided'}
+🔗 URL: ${url}
+⏰ Timestamp: ${new Date().toISOString()}
+
+📋 Response Body:
+${responseText || '(empty response)'}
+
+📝 Request Headers Sent:
+${JSON.stringify(createHeaders(), null, 2)}`;
+
+          if (response.ok) {
+            showMessage(pingOut, `✅ Ping successful! (HTTP ${response.status})`, 'success');
+          } else {
+            showMessage(pingOut, `⚠️ Ping completed with HTTP ${response.status}`, 'error');
+          }
+
+        } catch (error) {
+          const errorMsg = `❌ Connection failed: ${error.message}`;
+          pingOut.textContent = `[${new Date().toLocaleTimeString()}] ${errorMsg}
+          
+🔗 URL: ${url}
+🔐 Secret: ${getSecret() ? 'Provided' : 'Not provided'}
+⏰ Timestamp: ${new Date().toISOString()}
+          
+🚫 Error Details:
+${error.stack || error.message}`;
+          
+          showMessage(pingOut, errorMsg, 'error');
+        }
+      });
+
+      // Quote form submission
+      quoteForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const url = getURL();
+        if (!url) {
+          showMessage(quoteResult, 'Please configure your webhook URL in the section above.', 'error');
+          urlEl.focus();
+          return;
+        }
+
+const payload = {
+  key: getSecret(),
+  type: 'quote_request',
+  company_name: companyName.value.trim(),
+  project_scope: projectScope.value.trim(),
+  budget_hint: budgetHint.value.trim() || null,
+  deadline: deadline.value || null,
+  timestamp: new Date().toISOString(),
+  source: 'secure-web-form',
+  key: getSecret() // ✅ Secret now in the body
+};
+
+        showMessage(quoteResult, 'Submitting secure quote request...', 'info');
+
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: createHeaders(),
+            body: JSON.stringify(payload)
+          });
+
+          const responseText = await response.text();
+          
+          quoteResult.textContent = `[${new Date().toLocaleTimeString()}] 📤 QUOTE REQUEST SUBMITTED
+
+📊 Status: HTTP ${response.status} ${response.statusText}
+🔐 Secret Key: ${getSecret() ? '✅ Authenticated' : '⚠️ No authentication'}
+🏢 Company: ${payload.company_name}
+💰 Budget: ${payload.budget_hint || 'Not specified'}
+📅 Deadline: ${payload.deadline || 'Not specified'}
+
+📋 Response:
+${responseText || '(empty response)'}
+
+✉️ Your quote request has been ${response.ok ? 'successfully submitted' : 'submitted with issues'}.`;
+
+          if (response.ok) {
+            showMessage(quoteResult, '✅ Quote request submitted successfully!', 'success');
+            quoteForm.reset();
+          } else {
+            showMessage(quoteResult, `⚠️ Quote request completed with HTTP ${response.status}`, 'error');
+          }
+
+        } catch (error) {
+          const errorMsg = `❌ Failed to submit quote request: ${error.message}`;
+          quoteResult.textContent = `[${new Date().toLocaleTimeString()}] ${errorMsg}
+          
+🔗 URL: ${url}
+🔐 Secret: ${getSecret() ? 'Provided' : 'Not provided'}
+          
+🚫 Error Details:
+${error.message}`;
+          
+          showMessage(quoteResult, errorMsg, 'error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
