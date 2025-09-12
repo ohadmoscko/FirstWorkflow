@@ -367,6 +367,7 @@
 function createHeaders() {
   return {
     'Content-Type': 'application/json' // Only Content-Type header remains
+     'x-secret-key': getSecret()
   };
 }
 
