@@ -1,4 +1,5 @@
 ## Learn More (Full Docs)
+Note: Browser sends an OPTIONS preflight (204) before the real POST. Expect OPTIONS 204 + POST 200 (valid) or POST 403 (invalid).
 # FirstWorkflow – Secure Webhook Form
 Single-file HTML page that posts quotes to a Make.com webhook. Enter your **Webhook URL** and **Secret** once, click **Save Config** (stored locally in your browser), then use **Send Test Ping** or **Request a Quote**.
 Make scenario validates the secret and writes rows to **FirstWorkflow_Quotes / Sheet1** in Google Sheets.
