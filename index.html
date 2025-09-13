@@ -197,19 +197,20 @@
       <h3>🔧 Webhook Configuration</h3>
       
       <div class="form-field">
-        <label for="hookUrl">Make.com Webhook URL:</label>
+        <label for="hookUrl">Proxy URL https://plain-term-ee30.ohadmoscko.workers.dev
+:</label>
         <input id="hookUrl" type="url" placeholder="https://hook.eu2.make.com/your-webhook-url">
         <div class="help-text">Your Make.com webhook endpoint URL</div>
       </div>
 
-      <div class="form-field">
-        <label for="secretKey">Secret Key:</label>
-        <div class="secret-input">
-          <input id="secretKey" type="password" placeholder="Enter your secret authentication key">
-          <button type="button" class="toggle-visibility" id="toggleSecret" title="Toggle visibility">
-            👁️
-          </button>
-        </div>
+<div class="form-field" hidden>
+  <label for="secretKey">Secret Key:</label>
+  <div class="secret-input">
+    <input id="secretKey" type="password" placeholder="(handled by server)">
+    <button type="button" class="toggle-visibility" id="toggleSecret" title="Toggle visibility">👁️</button>
+  </div>
+  <div class="help-text">Secret is added on the server by the proxy.</div>
+</div>
         <div class="help-text">This key will be sent in the request headers for authentication</div>
       </div>
 
@@ -302,25 +303,23 @@
 })();
 
       // Load saved configuration
-      try {
-        const savedUrl = localStorage.getItem('makeHookUrl');
-        const savedSecret = localStorage.getItem('makeHookSecret');
-        if (savedUrl) urlEl.value = savedUrl;
-        if (savedSecret) secretEl.value = savedSecret;
-      } catch (e) {
-        console.warn('Could not load saved config:', e);
-      }
+try {
+  const savedUrl = localStorage.getItem('makeHookUrl');
+  if (savedUrl) urlEl.value = savedUrl;
+  try { localStorage.removeItem('makeHookSecret'); } catch {}
+} catch {}
+
 
       // Save configuration
-      function saveConfig() {
-        try {
-          localStorage.setItem('makeHookUrl', getURL());
-          localStorage.setItem('makeHookSecret', getSecret());
-          showMessage(pingOut, '✅ Configuration saved locally!', 'success');
-        } catch (e) {
-          showMessage(pingOut, '❌ Could not save configuration: ' + e.message, 'error');
-        }
-      }
+function saveConfig() {
+  try {
+    localStorage.setItem('makeHookUrl', getURL());
+    showMessage(pingOut, '✅ Configuration saved locally!', 'success');
+  } catch (e) {
+    showMessage(pingOut, '❌ Could not save: ' + e.message, 'error');
+  }
+}
+
 
       // Clear configuration
       function clearConfig() {
@@ -401,7 +400,6 @@ function createHeaders() {
         
         try {
 const payload = {
-  key: getSecret(),
   ping: 'ok',
   source: 'secure-webhook-test',
   ts: new Date().toISOString(),   // was "timestamp"
